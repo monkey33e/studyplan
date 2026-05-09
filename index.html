@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>인덕원고 공부 습관 분석기</title>
+<title>영재고 공부 습관 분석기</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -55,8 +55,6 @@ body{
 .card:hover{border-color:rgba(108,92,231,0.3);box-shadow:0 0 40px rgba(108,92,231,0.08)}
 .card h2{font-size:1.35rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
 .card h2 .icon{font-size:1.4rem}
-
-/* ── 미응답 카드 강조 (shake + 빨간 테두리) ── */
 .card.error{
   border-color:#e17055 !important;
   box-shadow:0 0 50px rgba(225,112,85,0.4),
@@ -84,8 +82,6 @@ body{
   0%,100%{transform:scale(1)}
   50%{transform:scale(1.08)}
 }
-
-/* ── 토스트 알림 ── */
 .toast{
   position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);
   background:linear-gradient(135deg,#e17055,#d63031);
@@ -99,7 +95,6 @@ body{
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast .toast-icon{font-size:1.3rem}
-
 .form-group{margin-bottom:22px}
 .form-group label{display:block;font-size:0.92rem;font-weight:600;color:var(--text);margin-bottom:8px}
 .form-group .sub{font-size:0.78rem;color:var(--text2);margin-bottom:8px}
@@ -127,8 +122,6 @@ body{
 .btn:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(108,92,231,0.4)}
 .btn:active{transform:translateY(0)}
 .btn.loading{pointer-events:none;opacity:0.7}
-
-/* ── 진행률 표시 ── */
 .progress-wrap{
   position:sticky;top:10px;z-index:50;
   background:var(--card);border:1px solid var(--border);
@@ -145,7 +138,6 @@ body{
   border-radius:4px;transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1);
   width:0%;
 }
-
 #result-section{display:none;animation:fadeInUp 0.8s ease}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 .score-circle-wrap{text-align:center;margin:30px 0}
@@ -261,7 +253,6 @@ body{
   <div class="orb"></div><div class="orb"></div><div class="orb"></div>
 </div>
 
-<!-- 토스트 알림 -->
 <div class="toast" id="toast">
   <span class="toast-icon">⚠️</span>
   <span id="toast-msg">아직 답하지 않은 문항이 있어요!</span>
@@ -270,13 +261,12 @@ body{
 <div class="container">
 
   <div class="header">
-    <div class="badge">🧠 인덕원고 공부 습관 개선 캠페인</div>
+    <div class="badge">🧠 영재고 공부 습관 개선 캠페인</div>
     <h1>Study Habit Analyzer</h1>
     <p>설문 응답을 기반으로 습관지수를 예측하고<br>
-    스테나인 9등급으로 위치를 정확하게 알려드립니다</p>
+    9등급으로 위치를 정확하게 알려드립니다</p>
   </div>
 
-  <!-- 진행률 표시 -->
   <div class="progress-wrap" id="progress-wrap">
     <div class="progress-info">진행률 <span id="progress-text">0/8</span></div>
     <div class="progress-bar"><div class="fill" id="progress-fill"></div></div>
@@ -284,7 +274,6 @@ body{
 
   <form id="survey-form" novalidate>
 
-    <!-- Q1 -->
     <div class="card" data-question="study_time">
       <div class="error-tag">⚠️ 답변이 필요합니다</div>
       <h2><span class="icon">📚</span> 1. 하루 공부 시간</h2>
@@ -304,7 +293,6 @@ body{
       </div>
     </div>
 
-    <!-- Q2 -->
     <div class="card" data-question="study_period">
       <div class="error-tag">⚠️ 답변이 필요합니다</div>
       <h2><span class="icon">🕐</span> 2. 주로 공부하는 시간대</h2>
@@ -320,7 +308,6 @@ body{
       </div>
     </div>
 
-    <!-- Q3 -->
     <div class="card" data-question="focus_span">
       <div class="error-tag">⚠️ 답변이 필요합니다</div>
       <h2><span class="icon">⏱️</span> 3. 한 번에 집중하는 시간</h2>
@@ -341,7 +328,6 @@ body{
       </div>
     </div>
 
-    <!-- Q4 -->
     <div class="card" data-question="distraction">
       <div class="error-tag">⚠️ 답변이 필요합니다</div>
       <h2><span class="icon">⚡</span> 4. 가장 큰 집중 방해 요인</h2>
@@ -359,7 +345,6 @@ body{
       </div>
     </div>
 
-    <!-- Q5 -->
     <div class="card" data-question="phone_time">
       <div class="error-tag">⚠️ 답변이 필요합니다</div>
       <h2><span class="icon">📱</span> 5. 하루 휴대폰 사용 시간</h2>
@@ -380,7 +365,6 @@ body{
       </div>
     </div>
 
-    <!-- Q6 -->
     <div class="card" data-question="sleep_time">
       <div class="error-tag">⚠️ 답변이 필요합니다</div>
       <h2><span class="icon">💤</span> 6. 평균 수면 시간</h2>
@@ -400,7 +384,6 @@ body{
       </div>
     </div>
 
-    <!-- Q7 -->
     <div class="card" data-question="plan_exec">
       <div class="error-tag">⚠️ 답변이 필요합니다</div>
       <h2><span class="icon">📋</span> 7. 계획 실행률</h2>
@@ -416,7 +399,6 @@ body{
       </div>
     </div>
 
-    <!-- Q8 -->
     <div class="card" data-question="self_eval">
       <div class="error-tag">⚠️ 답변이 필요합니다</div>
       <h2><span class="icon">🎯</span> 8. 자기 공부 효율 평가</h2>
@@ -436,7 +418,6 @@ body{
     </button>
   </form>
 
-  <!-- 결과 영역 -->
   <div id="result-section">
     <div class="card" id="score-card">
       <h2><span class="icon">📊</span> 당신의 습관지수</h2>
@@ -457,11 +438,11 @@ body{
       <div class="stat-bar">
         <div class="stat-item">
           <div class="stat-val" id="stat-stanine">—</div>
-          <div class="stat-label">스테나인 등급</div>
+          <div class="stat-label">9등급</div>
         </div>
         <div class="stat-item">
           <div class="stat-val" id="stat-pct">—</div>
-          <div class="stat-label">백분위</div>
+          <div class="stat-label">상위 백분위</div>
         </div>
         <div class="stat-item">
           <div class="stat-val" id="stat-region">—</div>
@@ -469,9 +450,10 @@ body{
         </div>
       </div>
       <div class="stanine-wrap">
-        <div style="font-size:0.95rem;font-weight:700;margin-bottom:6px">📈 스테나인 9등급 분포에서의 위치</div>
+        <div style="font-size:0.95rem;font-weight:700;margin-bottom:6px">📈 9등급 분포에서의 위치</div>
         <div style="font-size:0.78rem;color:var(--text2);margin-bottom:8px">
-          정규분포 기반 표준 9등급 — 평균(5등급)을 중심으로 좌우 대칭
+          왼쪽이 <b style="color:#00b894">1등급(최상위, 상위 4%)</b> → 오른쪽이 <b style="color:#e17055">9등급(최하위)</b><br>
+          정규분포 기반 표준 9등급 (수능 등급제와 동일)
         </div>
         <div class="stanine-chart">
           <div class="stanine-bars" id="stanine-bars"></div>
@@ -491,7 +473,8 @@ body{
         <strong style="color:var(--text)">H = 0.25×공부시간 + 0.15×집중력 + 0.20×수면시간 + 0.25×계획실행률 + 0.05×자기평가 − 0.10×휴대폰사용</strong><br>
         • 각 항목은 0~1 정규화 후 가중합산 (총점 0~100)<br>
         • 백분위는 정규분포 N(50, 18²) 기반 산출<br>
-        • 스테나인 9등급으로 위치 시각화 (4-7-12-17-20-17-12-7-4%)
+        • <b style="color:#00b894">1등급 = 최상위(상위 4%)</b>, <b style="color:#e17055">9등급 = 최하위(하위 4%)</b><br>
+        • 분포 비율: 4-7-12-17-20-17-12-7-4% (수능 등급제와 동일)
       </div>
     </div>
 
@@ -502,13 +485,43 @@ body{
   </div>
 
   <div class="footer">
-    <p>인덕원고 공부 습관 개선 캠페인 · 2026<br>데이터 기반 맞춤 학습 전략 시스템</p>
+    <p>영재고 공부 습관 개선 캠페인 · 2026<br>데이터 기반 맞춤 학습 전략 시스템</p>
   </div>
 </div>
 
 <script>
-const STANINE_PCT = [4, 7, 12, 17, 20, 17, 12, 7, 4];
-const STANINE_PERCENTILE = [2, 7, 16, 31, 50, 69, 84, 93, 98];
+/* ═══════════════════════════════════════════════════
+   9등급 정의 (한국 수능 등급제)
+   ─────────────────────────────────────────────────
+   1등급 = 최상위 (상위 4%)
+   2등급 = 상위 11%
+   3등급 = 상위 23%
+   4등급 = 상위 40%
+   5등급 = 평균 (상위 60%)
+   6등급 = 상위 77%
+   7등급 = 상위 89%
+   8등급 = 상위 96%
+   9등급 = 최하위 (상위 100%)
+   ═══════════════════════════════════════════════════ */
+
+// 등급별 비율 (1~9등급 순서)
+const GRADE_PCT = [4, 7, 12, 17, 20, 17, 12, 7, 4];
+// 각 등급의 누적 백분위 (상위 기준)
+const GRADE_TOP_PERCENTILE = {
+  1: 4,    // 상위 4%
+  2: 11,   // 상위 11%
+  3: 23,   // 상위 23%
+  4: 40,   // 상위 40%
+  5: 60,   // 상위 60% (평균)
+  6: 77,   // 상위 77%
+  7: 89,   // 상위 89%
+  8: 96,   // 상위 96%
+  9: 100   // 상위 100% (최하위)
+};
+// 각 등급의 대표 백분위 (중간값)
+const GRADE_DISPLAY_PCT = {
+  1: 2, 2: 8, 3: 18, 4: 32, 5: 50, 6: 68, 7: 82, 8: 92, 9: 98
+};
 
 const QUESTION_NAMES = ['study_time','study_period','focus_span','distraction',
                         'phone_time','sleep_time','plan_exec','self_eval'];
@@ -523,7 +536,6 @@ const QUESTION_LABELS = {
   self_eval:'8번 (자기 평가)'
 };
 
-// ── 진행률 업데이트 ─────────────────────────────
 function updateProgress(){
   let done=0;
   QUESTION_NAMES.forEach(n=>{
@@ -534,10 +546,8 @@ function updateProgress(){
   document.getElementById('progress-fill').style.width=pct+'%';
 }
 
-// ── 라디오 선택 효과 ───────────────────────────
 document.querySelectorAll('.radio-group input[type="radio"]').forEach(input=>{
   input.addEventListener('change', function(){
-    // 같은 이름의 모든 span 초기화
     document.querySelectorAll(`input[name="${this.name}"]`).forEach(i=>{
       const s=i.nextElementSibling;
       s.style.background='var(--glass)';
@@ -548,17 +558,12 @@ document.querySelectorAll('.radio-group input[type="radio"]').forEach(input=>{
     span.style.background='linear-gradient(135deg,#6c5ce7,#a29bfe)';
     span.style.borderColor='#6c5ce7';
     span.style.color='white';
-
-    // 응답한 카드의 에러 상태 제거
     const card = this.closest('.card');
-    if(card.classList.contains('error')){
-      card.classList.remove('error');
-    }
+    if(card.classList.contains('error')){card.classList.remove('error');}
     updateProgress();
   });
 });
 
-// ── 토스트 ──────────────────────────────────────
 let toastTimeout;
 function showToast(msg){
   const toast=document.getElementById('toast');
@@ -568,47 +573,31 @@ function showToast(msg){
   toastTimeout=setTimeout(()=>toast.classList.remove('show'),3500);
 }
 
-// ── 폼 제출 ─────────────────────────────────────
 document.getElementById('survey-form').addEventListener('submit',function(e){
   e.preventDefault();
-
-  // 미응답 체크
   const unanswered = [];
   QUESTION_NAMES.forEach(n=>{
     const checked = document.querySelector(`input[name="${n}"]:checked`);
     const card = document.querySelector(`.card[data-question="${n}"]`);
-    if(!checked){
-      unanswered.push({name:n, card:card});
-      card.classList.add('error');
-    } else {
-      card.classList.remove('error');
-    }
+    if(!checked){unanswered.push({name:n, card:card});card.classList.add('error');}
+    else{card.classList.remove('error');}
   });
-
   if(unanswered.length > 0){
-    // 토스트 알림
     const labels = unanswered.map(u=>QUESTION_LABELS[u.name].split(' ')[0]).join(', ');
     showToast(`${unanswered.length}개 문항 미응답: ${labels}`);
-
-    // 첫 번째 미응답 카드로 스크롤
     const firstUnanswered = unanswered[0].card;
     setTimeout(()=>{
       const rect = firstUnanswered.getBoundingClientRect();
       const offset = window.pageYOffset + rect.top - 100;
       window.scrollTo({top:offset, behavior:'smooth'});
     }, 100);
-
-    // shake 애니메이션 재생을 위해 클래스 재적용
     unanswered.forEach(u=>{
       u.card.classList.remove('error');
-      void u.card.offsetWidth; // reflow
+      void u.card.offsetWidth;
       u.card.classList.add('error');
     });
-
     return;
   }
-
-  // 모든 답변 완료 → 분석 시작
   const btn=document.getElementById('submit-btn');
   btn.classList.add('loading');
   btn.textContent='🔄 분석 중...';
@@ -623,7 +612,6 @@ document.getElementById('survey-form').addEventListener('submit',function(e){
   },1200);
 });
 
-// ── 핵심 계산 ────────────────────────────────────
 function calculate(v){
   const norm = (val,min,max)=>Math.max(0, Math.min(1, (val-min)/(max-min)));
   const study    = norm(+v.study_time, 0, 6);
@@ -638,22 +626,30 @@ function calculate(v){
   H = Math.max(0, Math.min(100, H));
   H = Math.round(H*10)/10;
 
+  // ── 정규분포 백분위 ──
+  // 점수가 높을수록 좋음 → z 값이 클수록 상위
   const z = (H - 50) / 18;
-  const percentile = Math.round(normalCDF(z) * 100);
+  // 상위 백분위 = 100 - CDF(z)*100
+  const topPercentile = Math.round(100 - normalCDF(z) * 100);
 
-  let stanine = 1;
-  let cumulative = 0;
-  for(let i=0; i<9; i++){
-    cumulative += STANINE_PCT[i];
-    if(percentile <= cumulative){stanine = i+1;break;}
-  }
+  // ── 9등급 결정 (1등급=상위 4%) ──
+  let grade;
+  if(topPercentile <= 4)        grade = 1;
+  else if(topPercentile <= 11)  grade = 2;
+  else if(topPercentile <= 23)  grade = 3;
+  else if(topPercentile <= 40)  grade = 4;
+  else if(topPercentile <= 60)  grade = 5;
+  else if(topPercentile <= 77)  grade = 6;
+  else if(topPercentile <= 89)  grade = 7;
+  else if(topPercentile <= 96)  grade = 8;
+  else                          grade = 9;
 
   let regionLabel, gradeColor;
-  if(stanine<=2){regionLabel='Poor';gradeColor='#d63031'}
-  else if(stanine<=4){regionLabel='Below Average';gradeColor='#e17055'}
-  else if(stanine===5){regionLabel='Average';gradeColor='#fdcb6e'}
-  else if(stanine<=7){regionLabel='Above Average';gradeColor='#0984e3'}
-  else{regionLabel='Superior';gradeColor='#00b894'}
+  if(grade<=2){regionLabel='최상위 (Superior)';gradeColor='#00b894'}
+  else if(grade<=4){regionLabel='상위 (Above Average)';gradeColor='#0984e3'}
+  else if(grade===5){regionLabel='평균 (Average)';gradeColor='#fdcb6e'}
+  else if(grade<=7){regionLabel='하위 (Below Average)';gradeColor='#e17055'}
+  else{regionLabel='최하위 (Poor)';gradeColor='#d63031'}
 
   document.getElementById('survey-form').style.display='none';
   document.getElementById('progress-wrap').style.display='none';
@@ -667,17 +663,18 @@ function calculate(v){
   animateNumber('score-val', 0, H, 1500);
 
   const gradeEl=document.getElementById('score-grade');
-  gradeEl.textContent='Stanine '+stanine;
+  gradeEl.textContent=grade+'등급';
   gradeEl.style.background=gradeColor+'22';
   gradeEl.style.color=gradeColor;
 
-  document.getElementById('stat-stanine').textContent=stanine+'/9';
-  document.getElementById('stat-pct').textContent='상위 '+(100-percentile)+'%';
-  document.getElementById('stat-region').textContent=regionLabel;
+  document.getElementById('stat-stanine').textContent=grade+'등급';
+  document.getElementById('stat-stanine').style.color=gradeColor;
+  document.getElementById('stat-pct').textContent='상위 '+topPercentile+'%';
+  document.getElementById('stat-region').textContent=regionLabel.split(' ')[0];
   document.getElementById('stat-region').style.color=gradeColor;
-  document.getElementById('stat-region').style.fontSize='1.1rem';
+  document.getElementById('stat-region').style.fontSize='1.05rem';
 
-  drawStanineChart(stanine);
+  drawGradeChart(grade);
 
   const items=[
     {name:'📚 공부시간',     val:study*100,  desc:getStudyDesc(+v.study_time)},
@@ -747,7 +744,7 @@ function calculate(v){
     document.querySelectorAll('.compare-bar .bar-fill').forEach(el=>{el.style.width=el.dataset.width});
   },800);
 
-  generateRecommendations(v, H, stanine);
+  generateRecommendations(v, H, grade);
   generateSchedule(v);
 
   setTimeout(()=>{document.getElementById('score-card').scrollIntoView({behavior:'smooth'})},200);
@@ -769,19 +766,24 @@ function sleepScore(hours){
   return Math.max(0, 1 - diff/4);
 }
 
-function drawStanineChart(myStanine){
+// ── 9등급 차트 (왼쪽=1등급 최상위, 오른쪽=9등급 최하위) ──
+function drawGradeChart(myGrade){
   const container=document.getElementById('stanine-bars');
   container.innerHTML='';
-  const maxPct=Math.max(...STANINE_PCT);
-  for(let i=0; i<9; i++){
-    const isMine = (i+1)===myStanine;
-    const heightPct = (STANINE_PCT[i]/maxPct)*100;
+  const maxPct=Math.max(...GRADE_PCT);
+
+  // 1등급부터 9등급 순으로 표시 (왼쪽이 최상위)
+  for(let i=1; i<=9; i++){
+    const isMine = i === myGrade;
+    const pct = GRADE_PCT[i-1];
+    const heightPct = (pct/maxPct)*100;
+    const displayPct = GRADE_DISPLAY_PCT[i];
     const div=document.createElement('div');
     div.className='stanine-bar'+(isMine?' mine':'');
     div.innerHTML=`
-      <div class="bar" data-h="${heightPct}%" data-pct="${STANINE_PCT[i]}%"></div>
-      <div class="num">${i+1}</div>
-      <div class="pct-label">${STANINE_PERCENTILE[i]}%</div>
+      <div class="bar" data-h="${heightPct}%" data-pct="${pct}%"></div>
+      <div class="num">${i}등급</div>
+      <div class="pct-label">상위${displayPct}%</div>
     `;
     container.appendChild(div);
   }
@@ -805,7 +807,7 @@ function animateNumber(id,start,end,duration){
 }
 
 function getStudyDesc(h){
-  if(h<=1)return `현재 하루 ${h}시간 공부. 인덕원고 학생 대비 매우 부족합니다. 우선 30분씩 늘려 1.5~2시간을 목표로 하세요.`;
+  if(h<=1)return `현재 하루 ${h}시간 공부. 영재고 학생 대비 매우 부족합니다. 우선 30분씩 늘려 1.5~2시간을 목표로 하세요.`;
   if(h<=2)return `${h}시간 공부 중입니다. 평균에 근접하지만, 깊이 있는 학습을 위해 2.5시간 이상이 권장됩니다.`;
   if(h<=4)return `${h}시간으로 양호합니다. 양보다 질을 위해 능동적 회상(Active Recall) 기법을 활용해 보세요.`;
   if(h<=6)return `${h}시간 공부하고 있습니다. 매우 우수합니다. 50분 공부/10분 휴식 리듬으로 번아웃을 방지하세요.`;
@@ -849,7 +851,7 @@ function getPhoneDesc(h){
   return `${h}시간 이상은 위험 수준입니다. 공부 시간엔 휴대폰을 다른 방에 두세요.`;
 }
 
-function generateRecommendations(v, H, stanine){
+function generateRecommendations(v, H, grade){
   const recs=[];
   const distMap={
     phone:{type:'urgent',icon:'📱',title:'휴대폰 디톡스 전략',
@@ -919,17 +921,29 @@ function generateRecommendations(v, H, stanine){
       body:`집중 지속이 ${v.focus_span}분 이하입니다.<br><br>① <b>뽀모도로 기법</b> — 15분→20분→25분 점진 확장<br>② <b>한 가지 과제만</b> — 멀티태스킹 금지<br>③ <b>책상 위 정리</b> — 시야의 자극 최소화`,
       tag:'능력 개발'});
   }
-  if(stanine>=8){
-    recs.push({type:'good',icon:'🏆',title:'상위권 유지 전략',
-      body:`Stanine ${stanine}등급 (${100-STANINE_PERCENTILE[stanine-1]}% 이내)!<br><br>① <b>메타인지 강화</b> — "내가 뭘 모르는지" 훈련<br>② <b>어려운 문제 우선</b><br>③ <b>주간 회고</b> — 매주 일요일 30분`,
+
+  // ── 등급별 종합 추천 (1등급=최상위) ──
+  if(grade<=2){
+    const topPct = grade===1 ? '4' : '11';
+    recs.push({type:'good',icon:'🏆',title:`최상위권 (${grade}등급) 유지 전략`,
+      body:`${grade}등급은 상위 ${topPct}% 이내의 매우 우수한 학습 습관입니다!<br><br>① <b>메타인지 강화</b> — "내가 뭘 모르는지" 훈련<br>② <b>어려운 문제 우선</b> — 안전지대 벗어나기<br>③ <b>주간 회고</b> — 매주 일요일 30분 학습 돌아보기`,
       tag:'심화 전략'});
-  } else if(stanine>=5){
-    recs.push({type:'info',icon:'📊',title:'중간 구간 돌파',
-      body:`Stanine ${stanine}등급 — 가장 개선 여지가 큰 구간입니다.<br><br>① <b>가장 약한 항목 1개</b>만 집중 개선<br>② <b>21일 챌린지</b> — 한 습관을 3주 반복<br>③ <b>스터디 파트너</b> — 실행률 2배 ↑`,
+  } else if(grade<=4){
+    recs.push({type:'info',icon:'📈',title:`상위권 (${grade}등급) 도약 전략`,
+      body:`${grade}등급 — 상위 40% 이내. 조금만 더 노력하면 최상위권 진입이 가능합니다!<br><br>① <b>약점 항목 1개</b> 집중 개선 — 나머지는 유지<br>② <b>일관성</b>이 핵심 — 매일 같은 루틴 유지<br>③ <b>모의고사·실전 문제</b> 정기적으로 풀기`,
       tag:'성장 전략'});
+  } else if(grade===5){
+    recs.push({type:'info',icon:'📊',title:`평균 (5등급) 돌파 전략`,
+      body:`5등급 — 정확히 평균 구간입니다. 가장 개선 여지가 큰 위치예요.<br><br>① <b>가장 약한 항목 1개</b>만 집중 개선<br>② <b>21일 챌린지</b> — 한 습관을 3주 반복<br>③ <b>스터디 파트너</b> — 실행률 2배 ↑`,
+      tag:'평균 돌파'});
+  } else if(grade<=7){
+    recs.push({type:'warn',icon:'⚡',title:`개선 필요 (${grade}등급) 회복 전략`,
+      body:`${grade}등급 — 평균 이하입니다. 작은 변화부터 시작하세요.<br><br>① <b>한 번에 하나씩</b> — 모든 걸 바꾸려 하면 실패<br>② <b>매일 30분</b>이라도 정해진 시간 학습<br>③ <b>휴대폰 분리</b> — 가장 큰 효과`,
+      tag:'우선 개선'});
   } else {
-    recs.push({type:'urgent',icon:'🔥',title:'기초 습관부터 다시 세우기',
-      body:`Stanine ${stanine}등급 — 기초 재설정이 필요합니다.<br><br><b>1주차 — 아주 작게:</b><br>① 매일 <b>15분만</b> 정해진 시간에 책상에 앉기<br>② 휴대폰 <b>다른 방에 두기</b><br>③ <b>수면 시각 고정</b><br><br><b>2주차:</b> 15분 → 30분으로 확장`,
+    const lowPct = grade===9 ? '4' : '11';
+    recs.push({type:'urgent',icon:'🔥',title:`기초 재설정 (${grade}등급) 긴급`,
+      body:`${grade}등급 — 하위 ${lowPct}% 구간. 기초 재설정이 필요합니다.<br><br><b>1주차 — 아주 작게:</b><br>① 매일 <b>15분만</b> 정해진 시간에 책상에 앉기<br>② 휴대폰 <b>다른 방에 두기</b><br>③ <b>수면 시각 고정</b><br><br><b>2주차:</b> 15분 → 30분으로 확장`,
       tag:'긴급 개선'});
   }
 
