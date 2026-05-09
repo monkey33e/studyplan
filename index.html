@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영재고 공부 습관 분석기</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;
+  --card:rgba(17,24,45,0.85);
+  --glass:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.08);
+  --accent:#6c5ce7;
+  --accent2:#a29bfe;
+  --green:#00b894;
+  --yellow:#fdcb6e;
+  --red:#e17055;
+  --orange:#f39c12;
+  --text:#e2e8f0;
+  --text2:#94a3b8;
+  --radius:16px;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;
+}
+.bg-orbs{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.15;animation:float 20s infinite ease-in-out}
+.orb:nth-child(1){width:500px;height:500px;background:#6c5ce7;top:-100px;left:-100px}
+.orb:nth-child(2){width:400px;height:400px;background:#00b894;bottom:-50px;right:-50px;animation-delay:-7s}
+.orb:nth-child(3){width:350px;height:350px;background:#e17055;top:50%;left:50%;animation-delay:-14s}
+@keyframes float{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(50px,-80px) scale(1.1)}
+  66%{transform:translate(-40px,60px) scale(0.9)}
+}
+.container{max-width:900px;margin:0 auto;padding:20px;position:relative;z-index:1}
+.header{text-align:center;padding:50px 20px 30px}
+.header h1{font-size:2.6rem;font-weight:800;
+  background:linear-gradient(135deg,#6c5ce7,#a29bfe,#00b894);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+.header p{color:var(--text2);font-size:1.05rem;line-height:1.6}
+.badge{display:inline-block;background:linear-gradient(135deg,#6c5ce7,#a29bfe);
+  color:white;padding:5px 14px;border-radius:20px;font-size:0.78rem;
+  font-weight:600;margin-bottom:12px;letter-spacing:0.5px}
+.card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:32px;margin-bottom:24px;
+  backdrop-filter:blur(20px);transition:all 0.4s ease;
+}
+.card:hover{border-color:rgba(108,92,231,0.3);box-shadow:0 0 40px rgba(108,92,231,0.08)}
+.card h2{font-size:1.35rem;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.4rem}
+.form-group{margin-bottom:22px}
+.form-group label{display:block;font-size:0.92rem;font-weight:600;color:var(--text);margin-bottom:8px}
+.form-group .sub{font-size:0.78rem;color:var(--text2);margin-bottom:8px}
+.radio-group{display:flex;flex-wrap:wrap;gap:8px}
+.radio-group label{cursor:pointer;user-select:none;flex:1;min-width:100px}
+.radio-group input[type="radio"]{display:none}
+.radio-group label span{
+  display:block;padding:10px 14px;background:var(--glass);
+  border:1px solid var(--border);border-radius:10px;
+  font-size:0.85rem;font-weight:500;transition:all 0.25s ease;
+  color:var(--text2);text-align:center;
+}
+.radio-group label:hover span{border-color:rgba(108,92,231,0.4);background:rgba(108,92,231,0.08)}
+.radio-group input[type="radio"]:checked+span{
+  background:linear-gradient(135deg,#6c5ce7,#a29bfe);
+  color:white;border-color:#6c5ce7;
+}
+.btn{
+  display:block;width:100%;padding:16px;border:none;border-radius:12px;
+  font-size:1.1rem;font-weight:700;cursor:pointer;
+  background:linear-gradient(135deg,#6c5ce7,#a29bfe);
+  color:white;letter-spacing:0.5px;
+  transition:all 0.3s ease;position:relative;overflow:hidden;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 35px rgba(108,92,231,0.4)}
+.btn:active{transform:translateY(0)}
+.btn.loading{pointer-events:none;opacity:0.7}
+#result-section{display:none;animation:fadeInUp 0.8s ease}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.score-circle-wrap{text-align:center;margin:30px 0}
+.score-circle{width:220px;height:220px;margin:0 auto;position:relative}
+.score-circle svg{width:220px;height:220px;transform:rotate(-90deg)}
+.score-circle .track{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:12}
+.score-circle .fill{fill:none;stroke-width:12;stroke-linecap:round;
+  transition:stroke-dashoffset 2s ease,stroke 0.5s ease}
+.score-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.score-num .val{font-size:3.2rem;font-weight:800;line-height:1}
+.score-num .label{font-size:0.85rem;color:var(--text2);margin-top:4px}
+.score-num .grade{font-size:1.1rem;font-weight:700;margin-top:6px;
+  padding:3px 12px;border-radius:8px;display:inline-block}
+.gauge-bar{height:8px;background:rgba(255,255,255,0.06);border-radius:4px;margin-top:6px;overflow:hidden}
+.gauge-bar .fill{height:100%;border-radius:4px;transition:width 1.5s ease}
+.analysis-item{
+  padding:18px;background:var(--glass);border:1px solid var(--border);
+  border-radius:12px;margin-bottom:12px;
+}
+.analysis-item .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.analysis-item .head .name{font-weight:600;font-size:0.95rem}
+.analysis-item .head .score{font-weight:700;font-size:1rem}
+.analysis-item .desc{font-size:0.82rem;color:var(--text2);line-height:1.5}
+.rec-card{
+  padding:22px;border-radius:14px;margin-bottom:14px;
+  border:1px solid var(--border);position:relative;overflow:hidden;
+}
+.rec-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:2px}
+.rec-card.urgent::before{background:#e17055}
+.rec-card.warn::before{background:#fdcb6e}
+.rec-card.good::before{background:#00b894}
+.rec-card.info::before{background:#6c5ce7}
+.rec-card .rec-title{font-weight:700;font-size:1.05rem;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.rec-card .rec-body{font-size:0.88rem;color:var(--text2);line-height:1.65}
+.rec-card .rec-tag{display:inline-block;padding:3px 10px;border-radius:6px;
+  font-size:0.72rem;font-weight:600;margin-top:8px}
+.rec-card.urgent .rec-tag{background:rgba(225,112,85,0.15);color:#e17055}
+.rec-card.warn .rec-tag{background:rgba(253,203,110,0.15);color:#fdcb6e}
+.rec-card.good .rec-tag{background:rgba(0,184,148,0.15);color:#00b894}
+.rec-card.info .rec-tag{background:rgba(108,92,231,0.15);color:#a29bfe}
+.compare-bar{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.compare-bar .lab{width:80px;font-size:0.82rem;color:var(--text2);text-align:right;flex-shrink:0}
+.compare-bar .bar-wrap{flex:1;height:22px;background:rgba(255,255,255,0.04);
+  border-radius:6px;position:relative;overflow:hidden}
+.compare-bar .bar-fill{height:100%;border-radius:6px;transition:width 1.5s ease;
+  display:flex;align-items:center;justify-content:flex-end;padding-right:8px;
+  font-size:0.72rem;font-weight:600;color:white}
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:rgba(255,255,255,0.08)}
+.timeline-item{position:relative;padding-bottom:20px}
+.timeline-item::before{content:'';position:absolute;left:-22px;top:4px;
+  width:12px;height:12px;border-radius:50%;border:2px solid #6c5ce7;background:var(--bg)}
+.timeline-item .time{font-size:0.78rem;color:#6c5ce7;font-weight:600;margin-bottom:2px}
+.timeline-item .content{font-size:0.88rem;color:var(--text2);line-height:1.5}
+.footer{text-align:center;padding:40px 20px;color:var(--text2);font-size:0.8rem}
+@media(max-width:600px){
+  .header h1{font-size:1.8rem}
+  .card{padding:20px}
+  .radio-group label{min-width:calc(50% - 4px)}
+  .score-circle{width:170px;height:170px}
+  .score-circle svg{width:170px;height:170px}
+  .score-num .val{font-size:2.5rem}
+}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(108,92,231,0.3);border-radius:3px}
+.hidden{display:none !important}
+.stat-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.stat-item{flex:1;min-width:120px;background:var(--glass);border:1px solid var(--border);
+  border-radius:12px;padding:16px;text-align:center}
+.stat-item .stat-val{font-size:1.6rem;font-weight:800;margin-bottom:2px}
+.stat-item .stat-label{font-size:0.75rem;color:var(--text2)}
+
+/* ── 스테나인 분포 차트 ── */
+.stanine-wrap{
+  background:rgba(108,92,231,0.05);border:1px solid rgba(108,92,231,0.15);
+  border-radius:14px;padding:20px;margin-top:20px;
+}
+.stanine-chart{position:relative;height:180px;margin:20px 0 50px 0}
+.stanine-bars{display:flex;align-items:flex-end;justify-content:space-between;
+  height:140px;gap:3px;position:relative;z-index:2}
+.stanine-bar{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:flex-end;height:100%;position:relative}
+.stanine-bar .bar{width:100%;border-radius:6px 6px 0 0;
+  background:linear-gradient(180deg,rgba(108,92,231,0.4),rgba(108,92,231,0.15));
+  transition:all 0.4s ease;position:relative}
+.stanine-bar.mine .bar{
+  background:linear-gradient(180deg,#6c5ce7,#a29bfe);
+  box-shadow:0 0 25px rgba(108,92,231,0.6);
+}
+.stanine-bar .bar::after{content:attr(data-pct);position:absolute;top:-22px;left:50%;
+  transform:translateX(-50%);font-size:0.7rem;font-weight:700;color:var(--text2)}
+.stanine-bar.mine .bar::after{color:#a29bfe;font-size:0.78rem}
+.stanine-bar .num{position:absolute;bottom:-22px;font-size:0.78rem;
+  font-weight:700;color:var(--text2)}
+.stanine-bar.mine .num{color:#a29bfe}
+.stanine-bar .pct-label{position:absolute;bottom:-42px;font-size:0.65rem;color:var(--text2)}
+.stanine-bar.mine .pct-label{color:#a29bfe;font-weight:700}
+.stanine-bar.mine::before{
+  content:'▼ 나';position:absolute;top:-42px;left:50%;
+  transform:translateX(-50%);font-size:0.78rem;font-weight:700;color:#a29bfe;
+  white-space:nowrap;animation:bounce 1.5s infinite;
+}
+@keyframes bounce{
+  0%,100%{transform:translateX(-50%) translateY(0)}
+  50%{transform:translateX(-50%) translateY(-5px)}
+}
+.stanine-region{position:absolute;top:-15px;font-size:0.7rem;color:var(--text2);
+  text-align:center;font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="bg-orbs">
+  <div class="orb"></div><div class="orb"></div><div class="orb"></div>
+</div>
+
+<div class="container">
+
+  <div class="header">
+    <div class="badge">🧠 영재고 공부 습관 개선 캠페인</div>
+    <h1>Study Habit Analyzer</h1>
+    <p>설문 응답을 기반으로 습관지수를 예측하고<br>
+    스테나인 9등급으로 위치를 정확하게 알려드립니다</p>
+  </div>
+
+  <form id="survey-form">
+
+    <!-- Q1: 하루 공부 시간 (세분화) -->
+    <div class="card">
+      <h2><span class="icon">📚</span> 하루 공부 시간</h2>
+      <div class="form-group">
+        <div class="sub">학교 수업 외 자율 학습 시간을 선택하세요</div>
+        <div class="radio-group">
+          <label><input type="radio" name="study_time" value="0.5" required><span>30분 이하</span></label>
+          <label><input type="radio" name="study_time" value="1"><span>30분~1시간</span></label>
+          <label><input type="radio" name="study_time" value="1.5"><span>1~1.5시간</span></label>
+          <label><input type="radio" name="study_time" value="2"><span>1.5~2시간</span></label>
+          <label><input type="radio" name="study_time" value="3"><span>2~3시간</span></label>
+          <label><input type="radio" name="study_time" value="4"><span>3~4시간</span></label>
+          <label><input type="radio" name="study_time" value="5"><span>4~5시간</span></label>
+          <label><input type="radio" name="study_time" value="6"><span>5~6시간</span></label>
+          <label><input type="radio" name="study_time" value="7"><span>6시간 이상</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="card">
+      <h2><span class="icon">🕐</span> 주로 공부하는 시간대</h2>
+      <div class="form-group">
+        <div class="radio-group">
+          <label><input type="radio" name="study_period" value="morning" required><span>🌄 아침</span></label>
+          <label><input type="radio" name="study_period" value="school"><span>🏫 학교 수업 시간</span></label>
+          <label><input type="radio" name="study_period" value="after"><span>🌅 방과 후</span></label>
+          <label><input type="radio" name="study_period" value="evening"><span>🌆 저녁</span></label>
+          <label><input type="radio" name="study_period" value="night"><span>🌃 밤</span></label>
+          <label><input type="radio" name="study_period" value="dawn"><span>🌌 새벽</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3: 한 번에 집중하는 시간 (세분화) -->
+    <div class="card">
+      <h2><span class="icon">⏱️</span> 한 번에 집중하는 시간</h2>
+      <div class="form-group">
+        <div class="sub">쉬지 않고 한 번에 집중할 수 있는 최대 시간</div>
+        <div class="radio-group">
+          <label><input type="radio" name="focus_span" value="5" required><span>5분 이하</span></label>
+          <label><input type="radio" name="focus_span" value="10"><span>5~10분</span></label>
+          <label><input type="radio" name="focus_span" value="15"><span>10~15분</span></label>
+          <label><input type="radio" name="focus_span" value="20"><span>15~20분</span></label>
+          <label><input type="radio" name="focus_span" value="30"><span>20~30분</span></label>
+          <label><input type="radio" name="focus_span" value="40"><span>30~40분</span></label>
+          <label><input type="radio" name="focus_span" value="50"><span>40~50분</span></label>
+          <label><input type="radio" name="focus_span" value="60"><span>50분~1시간</span></label>
+          <label><input type="radio" name="focus_span" value="90"><span>1~1.5시간</span></label>
+          <label><input type="radio" name="focus_span" value="120"><span>1.5시간 이상</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="card">
+      <h2><span class="icon">⚡</span> 가장 큰 집중 방해 요인</h2>
+      <div class="form-group">
+        <div class="radio-group">
+          <label><input type="radio" name="distraction" value="phone" required><span>📱 휴대폰</span></label>
+          <label><input type="radio" name="distraction" value="fatigue"><span>😴 피로/졸림</span></label>
+          <label><input type="radio" name="distraction" value="willpower"><span>💭 의지 부족</span></label>
+          <label><input type="radio" name="distraction" value="noise"><span>🔊 주변 소음</span></label>
+          <label><input type="radio" name="distraction" value="scatter"><span>🌀 산만함</span></label>
+          <label><input type="radio" name="distraction" value="anxiety"><span>😰 불안/걱정</span></label>
+          <label><input type="radio" name="distraction" value="hunger"><span>🍔 배고픔</span></label>
+          <label><input type="radio" name="distraction" value="other"><span>❓ 기타</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5: 하루 휴대폰 사용 시간 (세분화) -->
+    <div class="card">
+      <h2><span class="icon">📱</span> 하루 휴대폰 사용 시간</h2>
+      <div class="form-group">
+        <div class="sub">전화·문자 제외, SNS·게임·영상 등 사용 시간</div>
+        <div class="radio-group">
+          <label><input type="radio" name="phone_time" value="0.5" required><span>30분 이하</span></label>
+          <label><input type="radio" name="phone_time" value="1"><span>30분~1시간</span></label>
+          <label><input type="radio" name="phone_time" value="1.5"><span>1~1.5시간</span></label>
+          <label><input type="radio" name="phone_time" value="2"><span>1.5~2시간</span></label>
+          <label><input type="radio" name="phone_time" value="3"><span>2~3시간</span></label>
+          <label><input type="radio" name="phone_time" value="4"><span>3~4시간</span></label>
+          <label><input type="radio" name="phone_time" value="5"><span>4~5시간</span></label>
+          <label><input type="radio" name="phone_time" value="6"><span>5~6시간</span></label>
+          <label><input type="radio" name="phone_time" value="7"><span>6~7시간</span></label>
+          <label><input type="radio" name="phone_time" value="8"><span>7시간 이상</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6: 평균 수면 시간 (세분화) -->
+    <div class="card">
+      <h2><span class="icon">💤</span> 평균 수면 시간</h2>
+      <div class="form-group">
+        <div class="radio-group">
+          <label><input type="radio" name="sleep_time" value="3.5" required><span>4시간 이하</span></label>
+          <label><input type="radio" name="sleep_time" value="4.5"><span>4~5시간</span></label>
+          <label><input type="radio" name="sleep_time" value="5"><span>5시간</span></label>
+          <label><input type="radio" name="sleep_time" value="5.5"><span>5~5.5시간</span></label>
+          <label><input type="radio" name="sleep_time" value="6"><span>5.5~6시간</span></label>
+          <label><input type="radio" name="sleep_time" value="6.5"><span>6~6.5시간</span></label>
+          <label><input type="radio" name="sleep_time" value="7"><span>6.5~7시간</span></label>
+          <label><input type="radio" name="sleep_time" value="7.5"><span>7~7.5시간</span></label>
+          <label><input type="radio" name="sleep_time" value="8"><span>7.5~8시간</span></label>
+          <label><input type="radio" name="sleep_time" value="9"><span>8시간 이상</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="card">
+      <h2><span class="icon">📋</span> 계획 실행률</h2>
+      <div class="form-group">
+        <div class="sub">세운 계획 중 얼마나 실행하나요?</div>
+        <div class="radio-group">
+          <label><input type="radio" name="plan_exec" value="1" required><span>거의 못함 (10% 이하)</span></label>
+          <label><input type="radio" name="plan_exec" value="2"><span>가끔 (25%)</span></label>
+          <label><input type="radio" name="plan_exec" value="3"><span>절반 정도 (50%)</span></label>
+          <label><input type="radio" name="plan_exec" value="4"><span>대부분 (75%)</span></label>
+          <label><input type="radio" name="plan_exec" value="5"><span>거의 모두 (90% 이상)</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="card">
+      <h2><span class="icon">🎯</span> 자기 공부 효율 평가</h2>
+      <div class="form-group">
+        <div class="radio-group">
+          <label><input type="radio" name="self_eval" value="1" required><span>매우 낮다</span></label>
+          <label><input type="radio" name="self_eval" value="2"><span>낮다</span></label>
+          <label><input type="radio" name="self_eval" value="3"><span>보통</span></label>
+          <label><input type="radio" name="self_eval" value="4"><span>높다</span></label>
+          <label><input type="radio" name="self_eval" value="5"><span>매우 높다</span></label>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn" id="submit-btn">
+      🔬 습관지수 분석하기
+    </button>
+  </form>
+
+  <!-- 결과 영역 -->
+  <div id="result-section">
+
+    <div class="card" id="score-card">
+      <h2><span class="icon">📊</span> 당신의 습관지수</h2>
+      <div class="score-circle-wrap">
+        <div class="score-circle">
+          <svg viewBox="0 0 220 220">
+            <circle class="track" cx="110" cy="110" r="95"/>
+            <circle class="fill" id="score-ring" cx="110" cy="110" r="95"
+              stroke-dasharray="597" stroke-dashoffset="597"/>
+          </svg>
+          <div class="score-num">
+            <div class="val" id="score-val">0</div>
+            <div class="label">/ 100점</div>
+            <div class="grade" id="score-grade"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-bar">
+        <div class="stat-item">
+          <div class="stat-val" id="stat-stanine">—</div>
+          <div class="stat-label">스테나인 등급</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="stat-pct">—</div>
+          <div class="stat-label">백분위</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val" id="stat-region">—</div>
+          <div class="stat-label">위치 구간</div>
+        </div>
+      </div>
+
+      <!-- 스테나인 분포 차트 -->
+      <div class="stanine-wrap">
+        <div style="font-size:0.95rem;font-weight:700;margin-bottom:6px">📈 스테나인 9등급 분포에서의 위치</div>
+        <div style="font-size:0.78rem;color:var(--text2);margin-bottom:8px">
+          정규분포 기반 표준 9등급 — 평균(5등급)을 중심으로 좌우 대칭
+        </div>
+        <div class="stanine-chart">
+          <div class="stanine-bars" id="stanine-bars"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="analysis-card">
+      <h2><span class="icon">🔍</span> 항목별 세부 분석</h2>
+      <div id="analysis-items"></div>
+    </div>
+
+    <div class="card" id="compare-card">
+      <h2><span class="icon">📈</span> 평균 학습자와 비교</h2>
+      <div id="compare-bars"></div>
+    </div>
+
+    <div class="card" id="rec-card">
+      <h2><span class="icon">🚀</span> 맞춤 공부 전략 추천</h2>
+      <div id="rec-items"></div>
+    </div>
+
+    <div class="card" id="schedule-card">
+      <h2><span class="icon">🗓️</span> 추천 일일 루틴</h2>
+      <div class="timeline" id="schedule-timeline"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="icon">🧮</span> 습관지수 산출 공식</h2>
+      <div style="background:rgba(108,92,231,0.08);border:1px solid rgba(108,92,231,0.2);
+        border-radius:12px;padding:20px;font-size:0.9rem;line-height:2;color:var(--text2)">
+        <strong style="color:var(--text)">H = 0.25×공부시간 + 0.15×집중력 + 0.20×수면시간 + 0.25×계획실행률 + 0.05×자기평가 − 0.10×휴대폰사용</strong>
+        <br>
+        • 각 항목은 0~1 정규화 후 가중합산 (총점 0~100)<br>
+        • 백분위는 정규분포 N(50, 18²) 기반 산출<br>
+        • 스테나인 9등급으로 위치 시각화 (4-7-12-17-20-17-12-7-4%)
+      </div>
+    </div>
+
+    <button class="btn" onclick="location.reload()" style="margin-top:10px;
+      background:linear-gradient(135deg,#00b894,#55efc4)">
+      🔄 다시 분석하기
+    </button>
+  </div>
+
+  <div class="footer">
+    <p>영재고 공부 습관 개선 캠페인 · 2026<br>데이터 기반 맞춤 학습 전략 시스템</p>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   분석 엔진 — 스테나인 9등급 + 정규분포 백분위
+   ═══════════════════════════════════════════════════ */
+
+// 스테나인 분포: 각 등급의 비율(%)
+const STANINE_PCT = [4, 7, 12, 17, 20, 17, 12, 7, 4];
+// 각 등급의 백분위 중간값
+const STANINE_PERCENTILE = [2, 7, 16, 31, 50, 69, 84, 93, 98];
+// 등급명
+const STANINE_LABELS = ['Poor', 'Poor', 'Below\nAverage', 'Below\nAverage',
+                        'Average', 'Above\nAverage', 'Above\nAverage', 'Superior', 'Superior'];
+
+// 라디오 선택 효과
+document.querySelectorAll('.radio-group input[type="radio"]').forEach(input=>{
+  input.addEventListener('change', function(){
+    this.closest('.radio-group').querySelectorAll('span').forEach(s=>{
+      s.style.background='var(--glass)';
+      s.style.borderColor='var(--border)';
+      s.style.color='var(--text2)';
+    });
+    const span = this.nextElementSibling;
+    span.style.background='linear-gradient(135deg,#6c5ce7,#a29bfe)';
+    span.style.borderColor='#6c5ce7';
+    span.style.color='white';
+  });
+});
+
+document.getElementById('survey-form').addEventListener('submit',function(e){
+  e.preventDefault();
+  const btn=document.getElementById('submit-btn');
+  btn.classList.add('loading');
+  btn.textContent='🔄 분석 중...';
+  const vals={};
+  ['study_time','study_period','focus_span','distraction',
+   'phone_time','sleep_time','plan_exec','self_eval'].forEach(n=>{
+    const el=document.querySelector(`input[name="${n}"]:checked`);
+    vals[n]=el?el.value:'';
+  });
+  setTimeout(()=>{
+    calculate(vals);
+    btn.classList.remove('loading');
+    btn.textContent='🔬 습관지수 분석하기';
+  },1200);
+});
+
+// ── 핵심 계산 ────────────────────────────────────
+function calculate(v){
+  // 정규화 함수
+  const norm = (val,min,max)=>{
+    let r=(val-min)/(max-min);
+    return Math.max(0, Math.min(1, r));
+  };
+
+  // 각 항목 정규화 (실제 시간 기준)
+  const study    = norm(+v.study_time, 0, 6);   // 0~6시간
+  const focus    = norm(+v.focus_span, 0, 90);  // 0~90분
+  const sleep    = sleepScore(+v.sleep_time);   // 7~8시간이 최적
+  const plan     = norm(+v.plan_exec,  1, 5);
+  const selfEval = norm(+v.self_eval,  1, 5);
+  const phone    = norm(+v.phone_time, 0, 8);
+
+  // 가중합
+  let H = (0.25*study + 0.15*focus + 0.20*sleep
+          + 0.25*plan + 0.05*selfEval - 0.10*phone) * 100;
+  H = Math.max(0, Math.min(100, H));
+  H = Math.round(H*10)/10;
+
+  // ── 정규분포 N(50, 18²) 기반 백분위 ──
+  // 표준화: z = (H - 50) / 18
+  const z = (H - 50) / 18;
+  const percentile = Math.round(normalCDF(z) * 100);
+
+  // ── 스테나인 등급 결정 ──
+  // 누적 백분위로 판정
+  let stanine = 1;
+  let cumulative = 0;
+  for(let i=0; i<9; i++){
+    cumulative += STANINE_PCT[i];
+    if(percentile <= cumulative){
+      stanine = i+1;
+      break;
+    }
+  }
+
+  // 등급명
+  let regionLabel, gradeColor;
+  if(stanine<=2){regionLabel='Poor';gradeColor='#d63031'}
+  else if(stanine<=4){regionLabel='Below Average';gradeColor='#e17055'}
+  else if(stanine===5){regionLabel='Average';gradeColor='#fdcb6e'}
+  else if(stanine<=7){regionLabel='Above Average';gradeColor='#0984e3'}
+  else{regionLabel='Superior';gradeColor='#00b894'}
+
+  // 결과 표시
+  document.getElementById('survey-form').style.display='none';
+  document.getElementById('result-section').style.display='block';
+
+  const ring=document.getElementById('score-ring');
+  const circumference=2*Math.PI*95;
+  ring.style.stroke=gradeColor;
+  setTimeout(()=>{ring.style.strokeDashoffset=circumference*(1-H/100)},100);
+
+  animateNumber('score-val', 0, H, 1500);
+
+  const gradeEl=document.getElementById('score-grade');
+  gradeEl.textContent='Stanine '+stanine;
+  gradeEl.style.background=gradeColor+'22';
+  gradeEl.style.color=gradeColor;
+
+  document.getElementById('stat-stanine').textContent=stanine+'/9';
+  document.getElementById('stat-pct').textContent='상위 '+(100-percentile)+'%';
+  document.getElementById('stat-region').textContent=regionLabel;
+  document.getElementById('stat-region').style.color=gradeColor;
+  document.getElementById('stat-region').style.fontSize='1.1rem';
+
+  // 스테나인 분포 차트 그리기
+  drawStanineChart(stanine);
+
+  // 항목별 분석
+  const items=[
+    {name:'📚 공부시간',     val:study*100,  desc:getStudyDesc(+v.study_time)},
+    {name:'⏱️ 집중 지속력',  val:focus*100,  desc:getFocusDesc(+v.focus_span)},
+    {name:'💤 수면',         val:sleep*100,  desc:getSleepDesc(+v.sleep_time)},
+    {name:'📋 계획 실행',    val:plan*100,   desc:getPlanDesc(+v.plan_exec)},
+    {name:'🎯 자기 효율감',  val:selfEval*100,desc:getSelfDesc(+v.self_eval)},
+    {name:'📱 휴대폰 (역)',  val:(1-phone)*100,desc:getPhoneDesc(+v.phone_time)},
+  ];
+  const aiEl=document.getElementById('analysis-items');
+  aiEl.innerHTML='';
+  items.forEach(item=>{
+    const color=item.val>=70?'#00b894':item.val>=40?'#fdcb6e':'#e17055';
+    aiEl.innerHTML+=`
+      <div class="analysis-item">
+        <div class="head">
+          <span class="name">${item.name}</span>
+          <span class="score" style="color:${color}">${item.val.toFixed(0)}점</span>
+        </div>
+        <div class="gauge-bar">
+          <div class="fill" style="width:0%;background:${color}" data-width="${item.val}%"></div>
+        </div>
+        <div class="desc" style="margin-top:8px">${item.desc}</div>
+      </div>`;
+  });
+  setTimeout(()=>{
+    document.querySelectorAll('.gauge-bar .fill').forEach(el=>{el.style.width=el.dataset.width});
+  },300);
+
+  // 평균 비교 (이상적 권장 기준)
+  const idealData={
+    study:3.0,    // 권장 3시간
+    focus:45,     // 권장 45분
+    sleep:7.5,    // 권장 7.5시간
+    plan:4,       // 권장 75% 이상
+    selfEval:4,   // 권장 4점
+    phone:2       // 권장 2시간 이하
+  };
+  const compareEl=document.getElementById('compare-bars');
+  compareEl.innerHTML='';
+  const compareItems=[
+    {label:'공부시간', mine:+v.study_time, ideal:idealData.study, max:6, unit:'시간', reverse:false},
+    {label:'집중력',   mine:+v.focus_span, ideal:idealData.focus, max:90, unit:'분',   reverse:false},
+    {label:'수면',     mine:+v.sleep_time, ideal:idealData.sleep, max:9,  unit:'시간', reverse:false},
+    {label:'계획실행', mine:+v.plan_exec,  ideal:idealData.plan,  max:5,  unit:'점',   reverse:false},
+    {label:'자기평가', mine:+v.self_eval,  ideal:idealData.selfEval,max:5,unit:'점',  reverse:false},
+    {label:'휴대폰',   mine:+v.phone_time, ideal:idealData.phone, max:8,  unit:'시간', reverse:true},
+  ];
+  compareItems.forEach(ci=>{
+    const myPct=Math.min(100,(ci.mine/ci.max*100)).toFixed(0);
+    const avgPct=Math.min(100,(ci.ideal/ci.max*100)).toFixed(0);
+    let myColor;
+    if(ci.reverse){
+      myColor = +ci.mine <= +ci.ideal ? '#00b894' : '#e17055';
+    } else {
+      myColor = +ci.mine >= +ci.ideal ? '#00b894' : '#e17055';
+    }
+    compareEl.innerHTML+=`
+      <div style="margin-bottom:14px">
+        <div style="font-size:0.85rem;font-weight:600;margin-bottom:4px;color:var(--text)">
+          ${ci.label} <span style="color:var(--text2);font-weight:400">(${ci.mine}${ci.unit} vs 권장 ${ci.ideal}${ci.unit})</span>
+        </div>
+        <div class="compare-bar">
+          <div class="lab">나</div>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:0%;background:${myColor}" data-width="${myPct}%">${ci.mine}${ci.unit}</div>
+          </div>
+        </div>
+        <div class="compare-bar">
+          <div class="lab" style="color:#6c5ce7">권장</div>
+          <div class="bar-wrap">
+            <div class="bar-fill" style="width:0%;background:rgba(108,92,231,0.5)" data-width="${avgPct}%">${ci.ideal}${ci.unit}</div>
+          </div>
+        </div>
+      </div>`;
+  });
+  setTimeout(()=>{
+    document.querySelectorAll('.compare-bar .bar-fill').forEach(el=>{el.style.width=el.dataset.width});
+  },800);
+
+  generateRecommendations(v, H, stanine);
+  generateSchedule(v);
+
+  setTimeout(()=>{document.getElementById('score-card').scrollIntoView({behavior:'smooth'})},200);
+}
+
+// ── 정규분포 누적분포함수(CDF) ───────────────────
+function normalCDF(z){
+  // erf 근사식 (Abramowitz & Stegun)
+  const sign = z >= 0 ? 1 : -1;
+  z = Math.abs(z) / Math.sqrt(2);
+  const a1=0.254829592,a2=-0.284496736,a3=1.421413741;
+  const a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  const t = 1.0 / (1.0 + p*z);
+  const y = 1.0 - (((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-z*z);
+  return 0.5*(1.0 + sign*y);
+}
+
+// ── 수면 점수 (역 U자형) ─────────────────────────
+function sleepScore(hours){
+  // 7.5시간 최적, 멀어질수록 감점
+  const optimal = 7.5;
+  const diff = Math.abs(hours - optimal);
+  return Math.max(0, 1 - diff/4);
+}
+
+// ── 스테나인 차트 그리기 ─────────────────────────
+function drawStanineChart(myStanine){
+  const container=document.getElementById('stanine-bars');
+  container.innerHTML='';
+  const maxPct=Math.max(...STANINE_PCT);
+  for(let i=0; i<9; i++){
+    const isMine = (i+1)===myStanine;
+    const heightPct = (STANINE_PCT[i]/maxPct)*100;
+    const div=document.createElement('div');
+    div.className='stanine-bar'+(isMine?' mine':'');
+    div.innerHTML=`
+      <div class="bar" style="height:0%;" data-h="${heightPct}%" data-pct="${STANINE_PCT[i]}%"></div>
+      <div class="num">${i+1}</div>
+      <div class="pct-label">${STANINE_PERCENTILE[i]}%</div>
+    `;
+    container.appendChild(div);
+  }
+  setTimeout(()=>{
+    container.querySelectorAll('.bar').forEach(b=>{b.style.height=b.dataset.h});
+  },300);
+}
+
+function animateNumber(id,start,end,duration){
+  const el=document.getElementById(id);
+  const range=end-start;
+  const startTime=performance.now();
+  function step(time){
+    const elapsed=time-startTime;
+    const progress=Math.min(elapsed/duration,1);
+    const eased=1-Math.pow(1-progress,3);
+    el.textContent=(start+range*eased).toFixed(1);
+    if(progress<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ── 항목별 설명 ──────────────────────────────────
+function getStudyDesc(h){
+  if(h<=1)return `현재 하루 ${h}시간 공부. 영재고 학생 대비 매우 부족합니다. 우선 30분씩 늘려 1.5~2시간을 목표로 하세요.`;
+  if(h<=2)return `${h}시간 공부 중입니다. 평균에 근접하지만, 깊이 있는 학습을 위해 2.5시간 이상이 권장됩니다.`;
+  if(h<=4)return `${h}시간으로 양호합니다. 양보다 질을 위해 능동적 회상(Active Recall) 기법을 활용해 보세요.`;
+  if(h<=6)return `${h}시간 공부하고 있습니다. 매우 우수합니다. 50분 공부/10분 휴식 리듬으로 번아웃을 방지하세요.`;
+  return `${h}시간 이상은 매우 많습니다. 효율과 건강이 중요해요. 휴식 없이 공부하면 효율이 떨어집니다.`;
+}
+function getFocusDesc(m){
+  if(m<=10)return `집중 지속이 ${m}분 이하입니다. 뽀모도로 기법으로 15분→25분→45분 점진적 확장을 추천합니다.`;
+  if(m<=20)return `${m}분까지 집중합니다. 타이머를 활용해 25분 세션을 목표로 잡아 보세요.`;
+  if(m<=40)return `${m}분 집중력은 평균적입니다. 환경 정리와 방해 요소 차단으로 50분까지 늘릴 수 있습니다.`;
+  if(m<=60)return `${m}분 집중은 매우 우수합니다. 딥워크(Deep Work) 블록을 활용해 고난도 문제에 도전하세요.`;
+  return `${m}분 이상 집중! 탁월합니다. 다만 너무 길면 효율이 떨어지므로 90분 후엔 반드시 휴식하세요.`;
+}
+function getSleepDesc(h){
+  if(h<=5)return `${h}시간 수면은 인지 기능을 30~40% 저하시킵니다. 최소 6시간은 확보하세요.`;
+  if(h<=6)return `${h}시간은 약간 부족합니다. 취침 30분 전 블루라이트 차단이 수면의 질을 높입니다.`;
+  if(h<=7.5)return `${h}시간은 적정 범위입니다. 일정한 기상 시각을 유지하면 생체리듬이 안정됩니다.`;
+  if(h<=8.5)return `${h}시간 충분히 자고 있습니다. 수면은 기억 공고화의 핵심입니다.`;
+  return `${h}시간 이상은 다소 많습니다. 8시간 정도가 학습에 가장 효율적입니다.`;
+}
+function getPlanDesc(v){
+  const d={
+    1:'계획을 거의 실행하지 못하고 있습니다. 오늘 할 일 3개만 적는 마이크로 플래닝부터 시작하세요.',
+    2:'가끔 실행합니다. 계획을 종이에 적고, 완료 시 체크하는 시각적 피드백이 동기를 높입니다.',
+    3:'절반 정도 실행합니다. 우선순위를 A/B/C로 나누고, A만 반드시 끝내는 전략을 써 보세요.',
+    4:'대부분 실행합니다. 주간 리뷰를 추가하면 계획의 질이 더 올라갑니다.',
+    5:'거의 모두 실행하고 있습니다. 탁월합니다! 이제 도전 과제를 추가해 성장 곡선을 높이세요.'
+  };
+  return d[v]||'';
+}
+function getSelfDesc(v){
+  const d={
+    1:'자기 효율감이 매우 낮습니다. 작은 성공 경험을 쌓는 게 우선입니다.',
+    2:'효율감이 낮습니다. 매일 "오늘 한 것" 일지를 쓰면 자기 인식이 개선됩니다.',
+    3:'보통 수준입니다. 오답 노트가 객관적 실력 파악에 효과적입니다.',
+    4:'효율감이 높습니다. 메타인지를 키우면 더 큰 성장이 가능합니다.',
+    5:'매우 높습니다. 과신 방지를 위해 주기적 모의고사로 현실 체크를 추천합니다.'
+  };
+  return d[v]||'';
+}
+function getPhoneDesc(h){
+  if(h<=1)return `${h}시간! 휴대폰 관리가 매우 잘 되고 있습니다.`;
+  if(h<=2)return `${h}시간 사용 중입니다. 적절한 수준입니다.`;
+  if(h<=4)return `${h}시간은 다소 많습니다. 공부 중 비행기 모드 사용을 권장합니다.`;
+  if(h<=6)return `${h}시간은 평균보다 높습니다. Forest 등 앱 타이머를 강력 추천합니다.`;
+  return `${h}시간 이상은 위험 수준입니다. 공부 시간엔 휴대폰을 다른 방에 두세요.`;
+}
+
+// ── 추천 생성 ────────────────────────────────────
+function generateRecommendations(v, H, stanine){
+  const recs=[];
+
+  // 방해요인별
+  const distMap={
+    phone:{type:'urgent',icon:'📱',title:'휴대폰 디톡스 전략',
+      body:`휴대폰이 최대 방해요인입니다.<br><br><b>즉시 실행 3단계:</b><br>① <b>물리적 격리</b> — 공부할 때 휴대폰을 다른 방에 둔다<br>② <b>앱 차단</b> — Forest, 집중모드 등으로 SNS·유튜브 차단<br>③ <b>보상 시스템</b> — 50분 공부 후 10분만 사용`,
+      tag:'최우선 개선'},
+    fatigue:{type:'urgent',icon:'😴',title:'피로 관리 & 에너지 설계',
+      body:`피로/졸림이 최대 방해 요인입니다.<br><br>① <b>수면의 질</b> — 취침 1시간 전 블루라이트 차단<br>② <b>20분 파워낮잠</b> — 오후 2~3시 (NASA 연구: 집중력 34% 회복)<br>③ <b>카페인 타이밍</b> — 기상 후 90분 뒤부터, 오후 2시 이후 금지`,
+      tag:'최우선 개선'},
+    willpower:{type:'urgent',icon:'💭',title:'의지력 절약 시스템',
+      body:`의지력은 소모 자원입니다. 시스템을 만드세요.<br><br>① <b>환경 설계</b> — 책상 위에 할 과목만 놓기<br>② <b>습관 스태킹</b> — "저녁 먹고 → 바로 수학 30분"<br>③ <b>2분 규칙</b> — 하기 싫어도 2분만 시작`,
+      tag:'최우선 개선'},
+    scatter:{type:'urgent',icon:'🌀',title:'산만함 극복 전략',
+      body:`산만함이 큰 방해입니다.<br><br>① <b>단일 과제 집중</b> — 멀티태스킹은 효율을 40% 떨어뜨림<br>② <b>잡념 노트</b> — 떠오르는 생각을 종이에 적고 계속 진행<br>③ <b>마음챙김 5분</b> — 시작 전 호흡 명상`,
+      tag:'최우선 개선'},
+    noise:{type:'warn',icon:'🔊',title:'학습 환경 최적화',
+      body:`소음 방해를 받고 있습니다.<br><br>① <b>노이즈 캔슬링 이어폰</b> + Lo-fi/백색소음<br>② <b>도서관·독서실</b> 활용<br>③ <b>가족과 공부 시간 공유</b>`,
+      tag:'환경 개선'},
+    anxiety:{type:'warn',icon:'😰',title:'불안 관리 전략',
+      body:`불안이 집중을 방해합니다.<br><br>① <b>걱정 적기</b> — 종이에 적으면 머릿속이 정리됨<br>② <b>4-7-8 호흡법</b> — 4초 들이마시고 7초 멈추고 8초 내쉬기<br>③ <b>과정 중심 사고</b> — 결과 대신 오늘 할 일에 집중`,
+      tag:'심리 관리'},
+    hunger:{type:'info',icon:'🍔',title:'영양 관리',
+      body:`배고픔이 방해 요인입니다.<br><br>① <b>견과류·과일</b> 책상에 비치 — 혈당 안정<br>② <b>물 자주 마시기</b> — 탈수도 집중력 저하 원인<br>③ <b>식사 시간 규칙적으로</b>`,
+      tag:'생활 습관'},
+    other:{type:'info',icon:'❓',title:'개인 맞춤 점검',
+      body:`방해 요인을 더 구체적으로 파악해 보세요. 일주일간 공부 일지를 쓰며 언제 집중이 깨지는지 패턴을 찾는 것이 첫걸음입니다.`,
+      tag:'자기 관찰'}
+  };
+  if(distMap[v.distraction])recs.push(distMap[v.distraction]);
+
+  // 수면
+  if(+v.sleep_time<=5.5){
+    recs.push({type:'warn',icon:'🌙',title:'수면 시간 확보 긴급',
+      body:`현재 수면 ${v.sleep_time}시간. 학습 효율이 급격히 떨어집니다.<br><br>① 취침 시각 <b>30분만 앞당기기</b>부터 시작<br>② 매일 <b>일정한 시각</b>이 핵심 (주말 몰아 자기는 X)<br>③ 잠들기 전 <b>내일 할 일 3개</b>만 적기 → 불안 감소`,
+      tag:'건강 경고'});
+  }
+
+  // 시간대
+  if(v.study_period==='night'||v.study_period==='dawn'){
+    recs.push({type:'info',icon:'🌃',title:'밤·새벽 공부형 최적화',
+      body:`밤/새벽에 공부하는 유형입니다. 수면 부족 위험이 큽니다.<br><br>① 밤 공부도 <b>자정 전 마무리</b><br>② <b>방과 후 1시간</b> 추가로 확보하면 밤 부담 ↓<br>③ 밤에는 <b>암기·복습</b> 위주, 새 개념은 낮에`,
+      tag:'시간대 전략'});
+  }
+  if(v.study_period==='after'||v.study_period==='evening'){
+    recs.push({type:'good',icon:'🌅',title:'방과 후 공부형 — 강점 활용',
+      body:`방과 후 공부는 가장 효과적인 시간대입니다.<br><br>① <b>학교→집 이동 중</b> 오늘 할 일 정리<br>② 집 도착 <b>5분 이내 시작</b><br>③ 저녁 식사 전까지 <b>핵심 과목</b> 먼저`,
+      tag:'강점 유지'});
+  }
+  if(v.study_period==='morning'){
+    recs.push({type:'good',icon:'🌄',title:'아침형 학습자 — 희소 유형',
+      body:`아침 공부는 뇌 과학적으로 가장 효율적입니다.<br><br>① 기상 직후 <b>30분 수학/과학</b> — 전두엽 최대 활성<br>② <b>전날 밤 교재 펼쳐 두기</b> — 의사결정 에너지 절약<br>③ 아침 루틴 고정`,
+      tag:'강점 유지'});
+  }
+
+  // 계획 실행률
+  if(+v.plan_exec<=2){
+    recs.push({type:'urgent',icon:'📝',title:'마이크로 플래닝 시스템',
+      body:`계획 실행률이 낮습니다.<br><br>① <b>MIT(Most Important Task) 3개만</b> — 많으면 포기<br>② <b>"언제 어디서 무엇을"</b> 구체적으로<br>&nbsp;&nbsp;예: "저녁 7시 / 내 방 / 수학 15~20번"<br>③ <b>완료 체크</b>의 쾌감 활용`,
+      tag:'핵심 개선'});
+  }
+
+  // 휴대폰
+  if(+v.phone_time>=4){
+    recs.push({type:'warn',icon:'⏰',title:'스크린 타임 줄이기',
+      body:`휴대폰 사용 ${v.phone_time}시간.<br><br>① <b>스크린 타임 앱</b>으로 인식<br>② <b>SNS 알림 끄기</b> — 알림 1개에 재집중까지 23분<br>③ <b>그레이스케일 모드</b> — 흑백 화면이면 사용 욕구 ↓`,
+      tag:'즉시 실행'});
+  }
+
+  // 공부시간
+  if(+v.study_time<=1){
+    recs.push({type:'urgent',icon:'📚',title:'공부 시간 확보 우선',
+      body:`하루 ${v.study_time}시간으로 매우 부족합니다.<br><br>① <b>15분 공부</b>부터 시작 — 부담 없이<br>② <b>특정 시간·장소 고정</b> — 자동화의 시작<br>③ 매일 <b>같은 시각</b>에 책상에 앉기`,
+      tag:'기초 확보'});
+  }
+
+  // 집중력
+  if(+v.focus_span<=15){
+    recs.push({type:'warn',icon:'🎯',title:'집중력 훈련 프로그램',
+      body:`집중 지속이 ${v.focus_span}분 이하입니다.<br><br>① <b>뽀모도로 기법</b> — 15분→20분→25분 점진 확장<br>② <b>한 가지 과제만</b> — 멀티태스킹 금지<br>③ <b>책상 위 정리</b> — 시야의 자극 최소화`,
+      tag:'능력 개발'});
+  }
+
+  // 종합
+  if(stanine>=8){
+    recs.push({type:'good',icon:'🏆',title:'상위권 유지 전략',
+      body:`Stanine ${stanine}등급 (${100-STANINE_PERCENTILE[stanine-1]}% 이내)!<br><br>① <b>메타인지 강화</b> — "내가 뭘 모르는지" 훈련<br>② <b>어려운 문제 우선</b><br>③ <b>주간 회고</b> — 매주 일요일 30분`,
+      tag:'심화 전략'});
+  } else if(stanine>=5){
+    recs.push({type:'info',icon:'📊',title:'중간 구간 돌파',
+      body:`Stanine ${stanine}등급 — 가장 개선 여지가 큰 구간입니다.<br><br>① <b>가장 약한 항목 1개</b>만 집중 개선<br>② <b>21일 챌린지</b> — 한 습관을 3주 반복<br>③ <b>스터디 파트너</b> — 실행률 2배 ↑`,
+      tag:'성장 전략'});
+  } else {
+    recs.push({type:'urgent',icon:'🔥',title:'기초 습관부터 다시 세우기',
+      body:`Stanine ${stanine}등급 — 기초 재설정이 필요합니다.<br><br><b>1주차 — 아주 작게:</b><br>① 매일 <b>15분만</b> 정해진 시간에 책상에 앉기<br>② 휴대폰 <b>다른 방에 두기</b><br>③ <b>수면 시각 고정</b><br><br><b>2주차:</b> 15분 → 30분으로 확장`,
+      tag:'긴급 개선'});
+  }
+
+  const recEl=document.getElementById('rec-items');
+  recEl.innerHTML='';
+  recs.forEach(r=>{
+    recEl.innerHTML+=`
+      <div class="rec-card ${r.type}">
+        <div class="rec-title">${r.icon} ${r.title}</div>
+        <div class="rec-body">${r.body}</div>
+        <span class="rec-tag">${r.tag}</span>
+      </div>`;
+  });
+}
+
+// ── 일과표 ───────────────────────────────────────
+function generateSchedule(v){
+  const tl=document.getElementById('schedule-timeline');
+  tl.innerHTML='';
+  let schedule=[];
+
+  if(v.study_period==='morning'||v.study_period==='dawn'){
+    schedule=[
+      {time:'06:00',content:'⏰ 기상 + 세면 + 스트레칭'},
+      {time:'06:20',content:'📖 <b>1교시 자습</b> — 수학/과학 (전두엽 최대 활성)'},
+      {time:'07:10',content:'🍳 아침 식사'},
+      {time:'08:00',content:'🏫 등교 · 학교 수업'},
+      {time:'16:00',content:'🏠 하교 후 휴식 30분'},
+      {time:'16:30',content:'📖 <b>2교시 자습</b> — 복습 + 오답 정리'},
+      {time:'18:00',content:'🍽️ 저녁 식사'},
+      {time:'19:00',content:'📖 <b>3교시 자습</b> — 암기 / 약점 보완'},
+      {time:'20:30',content:'🎮 자유시간 (휴대폰은 여기서만!)'},
+      {time:'21:30',content:'📝 내일 MIT 3개 작성'},
+      {time:'22:00',content:'💤 취침'},
+    ];
+  } else if(v.study_period==='after'||v.study_period==='evening'){
+    schedule=[
+      {time:'06:30',content:'⏰ 기상'},
+      {time:'07:00',content:'🍳 아침 식사'},
+      {time:'08:00',content:'🏫 등교 · 학교 수업'},
+      {time:'16:00',content:'🏠 하교 → <b>5분 이내 책상 착석</b>'},
+      {time:'16:05',content:'📖 <b>1교시 자습</b> — 핵심 과목'},
+      {time:'17:30',content:'☕ 휴식 15분'},
+      {time:'17:45',content:'📖 <b>2교시 자습</b> — 복습 + 문제 풀이'},
+      {time:'18:45',content:'🍽️ 저녁 식사'},
+      {time:'19:30',content:'📖 <b>3교시 자습</b> — 암기 / 자유 학습'},
+      {time:'21:00',content:'🎮 자유시간 + 휴식'},
+      {time:'22:00',content:'📝 내일 할 일 정리'},
+      {time:'22:30',content:'💤 취침'},
+    ];
+  } else if(v.study_period==='night'){
+    schedule=[
+      {time:'07:00',content:'⏰ 기상 (수면 6.5시간 이상!)'},
+      {time:'07:30',content:'🍳 아침 식사'},
+      {time:'08:00',content:'🏫 등교 · 학교 수업'},
+      {time:'16:00',content:'🏠 하교 → 자유시간 + 운동/산책'},
+      {time:'17:30',content:'🍽️ 저녁 식사'},
+      {time:'18:30',content:'📖 <b>1교시 자습</b> — 가벼운 복습'},
+      {time:'19:30',content:'☕ 휴식 15분'},
+      {time:'19:45',content:'📖 <b>2교시 자습</b> — 핵심 과목 딥 스터디'},
+      {time:'21:15',content:'☕ 휴식 10분'},
+      {time:'21:25',content:'📖 <b>3교시 자습</b> — 암기/정리'},
+      {time:'23:00',content:'📝 내일 할 일 정리'},
+      {time:'23:30',content:'💤 취침 — 자정 넘기지 않기!'},
+    ];
+  } else {
+    schedule=[
+      {time:'07:00',content:'⏰ 기상'},
+      {time:'08:00',content:'🏫 학교 수업 — <b>적극적 참여</b>가 가장 효율적'},
+      {time:'12:00',content:'🍱 점심 + 10분 예습'},
+      {time:'16:00',content:'🏠 하교 → 30분 휴식'},
+      {time:'16:30',content:'📖 <b>자습</b> — 오늘 배운 내용 복습'},
+      {time:'18:00',content:'🍽️ 저녁'},
+      {time:'19:00',content:'📖 <b>자습</b> — 문제 풀이 / 약점 보완'},
+      {time:'21:00',content:'🎮 자유시간'},
+      {time:'22:00',content:'💤 취침'},
+    ];
+  }
+
+  if(+v.phone_time>=4){
+    schedule.splice(-2,0,{
+      time:'⚠️',
+      content:'<b style="color:#e17055">휴대폰은 자유시간에만!</b> 공부 중에는 다른 방에 격리'
+    });
+  }
+
+  schedule.forEach(s=>{
+    tl.innerHTML+=`
+      <div class="timeline-item">
+        <div class="time">${s.time}</div>
+        <div class="content">${s.content}</div>
+      </div>`;
+  });
+}
+</script>
+</body>
+</html>
