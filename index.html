@@ -679,6 +679,8 @@ function calculate(v){
   document.getElementById('stat-region').style.fontSize='1.05rem';
 
   drawGradeChart(grade);
+  console.log("score:", H);
+  console.log("level:", grade);
   saveResult(H, grade);
   const items=[
     {name:'📚 공부시간',     val:study*100,  desc:getStudyDesc(+v.study_time)},
@@ -1054,6 +1056,12 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 window.saveResult = async function(score, level){
+
+  if(level === undefined){
+    console.error("❌ level이 undefined임");
+    return;
+  }
+
   try {
     console.log("🔥 write start");
 
@@ -1068,7 +1076,6 @@ window.saveResult = async function(score, level){
   } catch (e) {
     console.error("❌ ERROR:", e);
   }
-};
-</script>
+};</script>
 </body>
 </html>
