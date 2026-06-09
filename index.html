@@ -680,8 +680,8 @@ function calculate(v){
 
   drawGradeChart(grade);
   console.log("score:", H);
-  console.log("level:", grade);
-  saveResult(H, grade);
+  console.log("level:", level);
+  saveResult(H, level);
   const items=[
     {name:'📚 공부시간',     val:study*100,  desc:getStudyDesc(+v.study_time)},
     {name:'⏱️ 집중 지속력',  val:focus*100,  desc:getFocusDesc(+v.focus_span)},
