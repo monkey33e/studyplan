@@ -1045,20 +1045,17 @@ const firebaseConfig = {
   apiKey: "AIzaSyCYOwBa6SKZSCJ2phMusU9-siCqt0OBvak",
   authDomain: "monkey-45902.firebaseapp.com",
   projectId: "monkey-45902",
-  storageBucket: "monkey-45902.firebasestorage.app",
+  storageBucket: "monkey-45902.appspot.com",
   messagingSenderId: "273419830820",
-  appId: "1:273419830820:web:6c4a67e3941447f08ffab1",
-  measurementId: "G-8C3V7KY2RL"
+  appId: "1:273419830820:web:6c4a67e3941447f08ffab1"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 window.saveResult = async function(score, level){
-  console.log("🔥 1. 함수 들어옴");
-
-  try{
-    console.log("🔥 2. Firestore write 시작");
+  try {
+    console.log("🔥 write start");
 
     const ref = await addDoc(collection(db, "results"), {
       score,
@@ -1066,12 +1063,12 @@ window.saveResult = async function(score, level){
       createdAt: Date.now()
     });
 
-    console.log("🔥 3. 성공 ID:", ref.id);
+    console.log("🔥 success:", ref.id);
 
-  } catch(err){
-    console.error("❌ 진짜 에러:", err);
+  } catch (e) {
+    console.error("❌ ERROR:", e);
   }
-}
+};
 </script>
 </body>
 </html>
