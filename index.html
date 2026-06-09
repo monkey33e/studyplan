@@ -1055,15 +1055,21 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 window.saveResult = async function(score, level){
+  console.log("🔥 1. 함수 들어옴");
+
   try{
-    await addDoc(collection(db, "results"), {
-      score: score,
-      level: level,
-      createdAt: new Date().toISOString()
+    console.log("🔥 2. Firestore write 시작");
+
+    const ref = await addDoc(collection(db, "results"), {
+      score,
+      level,
+      createdAt: Date.now()
     });
-    console.log("저장 완료");
+
+    console.log("🔥 3. 성공 ID:", ref.id);
+
   } catch(err){
-    console.error("저장 실패:", err);
+    console.error("❌ 진짜 에러:", err);
   }
 }
 </script>
