@@ -679,7 +679,7 @@ function calculate(v){
   document.getElementById('stat-region').style.fontSize='1.05rem';
 
   drawGradeChart(grade);
-  saveSurveyResult(H, grade);
+  saveResult(H, grade);
   const items=[
     {name:'📚 공부시간',     val:study*100,  desc:getStudyDesc(+v.study_time)},
     {name:'⏱️ 집중 지속력',  val:focus*100,  desc:getFocusDesc(+v.focus_span)},
