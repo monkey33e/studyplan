@@ -679,7 +679,7 @@ function calculate(v){
   document.getElementById('stat-region').style.fontSize='1.05rem';
 
   drawGradeChart(grade);
-
+  saveSurveyResult(H, grade);
   const items=[
     {name:'📚 공부시간',     val:study*100,  desc:getStudyDesc(+v.study_time)},
     {name:'⏱️ 집중 지속력',  val:focus*100,  desc:getFocusDesc(+v.focus_span)},
@@ -1035,6 +1035,36 @@ function generateSchedule(v){
         <div class="content">${s.content}</div>
       </div>`;
   });
+}
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCYOwBa6SKZSCJ2phMusU9-siCqt0OBvak",
+  authDomain: "monkey-45902.firebaseapp.com",
+  projectId: "monkey-45902",
+  storageBucket: "monkey-45902.firebasestorage.app",
+  messagingSenderId: "273419830820",
+  appId: "1:273419830820:web:6c4a67e3941447f08ffab1",
+  measurementId: "G-8C3V7KY2RL"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.saveResult = async function(score, level){
+  try{
+    await addDoc(collection(db, "results"), {
+      score: score,
+      level: level,
+      createdAt: new Date().toISOString()
+    });
+    console.log("저장 완료");
+  } catch(err){
+    console.error("저장 실패:", err);
+  }
 }
 </script>
 </body>
