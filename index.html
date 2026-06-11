@@ -647,6 +647,51 @@ function calculate(v){
   else if(topPercentile <= 89)  grade = 7;
   else if(topPercentile <= 96)  grade = 8;
   else                          grade = 9;
+  
+let studyType;
+let studyDesc = "";
+
+if(grade <= 2){
+    studyType = "📋 계획형";
+    studyDesc = `
+    ✔ 학습 계획을 세우고 꾸준히 실천하는 능력이 뛰어납니다.<br>
+    ✔ 공부 시간, 휴식 시간, 수면 습관이 비교적 안정적입니다.<br>
+    ✔ 목표를 정하고 실천하는 과정이 잘 형성되어 있습니다.<br>
+    ✔ 현재의 습관을 유지한다면 꾸준한 성적 향상이 기대됩니다.<br>
+    💡 추천: 장기 목표를 세우고 심화 학습에 도전해 보세요.
+    `;
+}
+else if(focus >= 0.8){
+    studyType = "🎯 집중형";
+    studyDesc = `
+    ✔ 짧은 시간에도 높은 집중력을 발휘합니다.<br>
+    ✔ 핵심 내용을 빠르게 이해하고 학습 효율이 높습니다.<br>
+    ✔ 공부 시간이 길지 않아도 좋은 성과를 낼 가능성이 있습니다.<br>
+    ✔ 다만 꾸준한 학습 습관을 함께 기르면 더욱 성장할 수 있습니다.<br>
+    💡 추천: 집중력이 높은 시간을 찾아 중요한 과목을 공부해 보세요.
+    `;
+}
+else if(grade >= 7 || phone >= 0.7){
+    studyType = "⚠️ 개선 필요형";
+    studyDesc = `
+    ✔ 휴대폰 사용이나 생활 습관이 학습에 영향을 주고 있습니다.<br>
+    ✔ 계획을 세워도 실천이 어려운 경우가 있습니다.<br>
+    ✔ 수면 부족이나 잦은 방해 요소로 집중력이 떨어질 수 있습니다.<br>
+    ✔ 작은 습관부터 개선하면 성적 향상의 가능성이 큽니다.<br>
+    💡 추천: 하루 휴대폰 사용 시간을 줄이고 규칙적인 수면 습관을 만들어 보세요.
+    `;
+}
+else{
+    studyType = "🌱 성장 가능형";
+    studyDesc = `
+    ✔ 공부 시간은 충분하지만 학습 방법을 개선할 여지가 있습니다.<br>
+    ✔ 조금만 더 효율적인 공부 전략을 사용하면 성과가 크게 향상될 수 있습니다.<br>
+    ✔ 기본적인 학습 의지는 갖추고 있어 발전 가능성이 높습니다.<br>
+    ✔ 자신에게 맞는 공부법을 찾는 것이 중요합니다.<br>
+    💡 추천: 오답 정리, 복습 계획, 목표 설정을 통해 학습 효율을 높여 보세요.
+    `;
+}
+
 
   let regionLabel, gradeColor;
   if(grade<=2){regionLabel='최상위 (Superior)';gradeColor='#00b894'}
@@ -679,9 +724,7 @@ function calculate(v){
   document.getElementById('stat-region').style.fontSize='1.05rem';
 
   drawGradeChart(grade);
-  console.log("score:", H);
-  console.log("level:", level);
-  saveResult(H, level);
+ 
   const items=[
     {name:'📚 공부시간',     val:study*100,  desc:getStudyDesc(+v.study_time)},
     {name:'⏱️ 집중 지속력',  val:focus*100,  desc:getFocusDesc(+v.focus_span)},
@@ -691,21 +734,35 @@ function calculate(v){
     {name:'📱 휴대폰 (역)',  val:(1-phone)*100,desc:getPhoneDesc(+v.phone_time)},
   ];
   const aiEl=document.getElementById('analysis-items');
-  aiEl.innerHTML='';
-  items.forEach(item=>{
-    const color=item.val>=70?'#00b894':item.val>=40?'#fdcb6e':'#e17055';
-    aiEl.innerHTML+=`
-      <div class="analysis-item">
-        <div class="head">
-          <span class="name">${item.name}</span>
-          <span class="score" style="color:${color}">${item.val.toFixed(0)}점</span>
-        </div>
-        <div class="gauge-bar">
-          <div class="fill" style="width:0%;background:${color}" data-width="${item.val}%"></div>
-        </div>
-        <div class="desc" style="margin-top:8px">${item.desc}</div>
-      </div>`;
-  });
+aiEl.innerHTML='';
+
+aiEl.innerHTML += `
+<div class="analysis-item" style="border:2px solid #4f46e5">
+  <div class="head">
+    <span class="name" style="font-size:1.2rem">
+      🧠 AI 학습 유형 : ${studyType}
+    </span>
+  </div>
+  <div class="desc" style="margin-top:10px;line-height:1.8">
+    ${studyDesc}
+  </div>
+</div>
+`;
+
+items.forEach(item=>{
+  const color=item.val>=70?'#00b894':item.val>=40?'#fdcb6e':'#e17055';
+  aiEl.innerHTML+=`
+    <div class="analysis-item">
+      <div class="head">
+        <span class="name">${item.name}</span>
+        <span class="score" style="color:${color}">${item.val.toFixed(0)}점</span>
+      </div>
+      <div class="gauge-bar">
+        <div class="fill" style="width:0%;background:${color}" data-width="${item.val}%"></div>
+      </div>
+      <div class="desc" style="margin-top:8px">${item.desc}</div>
+    </div>`;
+});
   setTimeout(()=>{
     document.querySelectorAll('.gauge-bar .fill').forEach(el=>{el.style.width=el.dataset.width});
   },300);
@@ -1039,43 +1096,5 @@ function generateSchedule(v){
   });
 }
 </script>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCYOwBa6SKZSCJ2phMusU9-siCqt0OBvak",
-  authDomain: "monkey-45902.firebaseapp.com",
-  projectId: "monkey-45902",
-  storageBucket: "monkey-45902.appspot.com",
-  messagingSenderId: "273419830820",
-  appId: "1:273419830820:web:6c4a67e3941447f08ffab1"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-window.saveResult = async function(score, level){
-
-  if(level === undefined){
-    console.error("❌ level이 undefined임");
-    return;
-  }
-
-  try {
-    console.log("🔥 write start");
-
-    const ref = await addDoc(collection(db, "results"), {
-      score,
-      level,
-      createdAt: Date.now()
-    });
-
-    console.log("🔥 success:", ref.id);
-
-  } catch (e) {
-    console.error("❌ ERROR:", e);
-  }
-};</script>
 </body>
 </html>
